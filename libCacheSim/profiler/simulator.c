@@ -111,7 +111,7 @@ static void _simulate(gpointer data, gpointer user_data) {
 /* disabled due to ARC and LeCaR use ghost entries in the hash table */
 #if defined(SUPPORT_TTL) && defined(ENABLE_SCAN)
   /* get expiration information */
-  if (local_cache->hashtable->n_obj != 0) {
+  if (local_cache->hashtable != NULL && local_cache->hashtable->n_obj != 0) {
     cache_stat_t temp_stat;
     memset(&temp_stat, 0, sizeof(cache_stat_t));
     temp_stat.curr_rtime = req->clock_time;

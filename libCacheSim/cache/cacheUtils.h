@@ -30,7 +30,8 @@ static inline void _get_cache_state_ht_iter(cache_obj_t *cache_obj,
 }
 
 static inline void get_cache_state(cache_t *cache, cache_stat_t *cache_state) {
-  if (cache->hashtable->n_obj == 0) return;
+  /* S3FIFO and other caches built from child caches have no hash table */
+  if (cache->hashtable == NULL || cache->hashtable->n_obj == 0) return;
 
   hashtable_foreach(cache->hashtable, _get_cache_state_ht_iter, cache_state);
 }

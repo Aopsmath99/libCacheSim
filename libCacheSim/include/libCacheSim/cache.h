@@ -146,6 +146,7 @@ struct cache {
   int64_t cache_size;
   int64_t default_ttl;
   int32_t obj_md_size;
+  int32_t hashpower;
   /* retained from common_cache_params_t so that clone_cache and
    * create_cache_with_new_size can pass it on to the new cache */
   int64_t n_total_req;
@@ -189,6 +190,10 @@ static inline common_cache_params_t default_common_cache_params(void) {
  */
 cache_t *cache_struct_init(const char *cache_name, common_cache_params_t params,
                            const void *const init_params);
+
+cache_t *cache_struct_init_without_hashtable(
+  const char *cache_name, common_cache_params_t params,
+  const void *const init_params);
 
 /**
  * free the cache struct, must be called in all cache_free functions

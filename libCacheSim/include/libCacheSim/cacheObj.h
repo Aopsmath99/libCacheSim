@@ -153,6 +153,18 @@ typedef struct {
                           // used by the optional learned control plane
 } S4FIFO_obj_metadata_t;
 
+// GDSF_S3FIFO_shared/rekey/warmup: the metadata of both policies, an object
+// is in the S3FIFO small or main queue through cache_obj.queue
+typedef struct {
+  double gdsf_priority;
+  int64_t gdsf_seq;  // tie breaker of equal priorities, older evicts first
+  int32_t gdsf_freq;
+  int8_t s3fifo_freq;
+  bool in_gdsf;
+  bool in_s3fifo;
+  bool in_main;
+} __attribute__((packed)) GDSF_S3FIFO_obj_metadata_t;
+
 typedef struct {
   // int32_t freq;
   int lru_id;
@@ -215,6 +227,7 @@ typedef struct cache_obj {
     S3FIFO_obj_metadata_t S3FIFO;
     MERLIN_obj_metadata_t MERLIN;
     S4FIFO_obj_metadata_t S4FIFO;
+    GDSF_S3FIFO_obj_metadata_t GDSF_S3FIFO;
     Sieve_obj_params_t sieve;
     CAR_obj_metadata_t CAR;
     Clock2QPlus_obj_metadata_t Clock2QPlus;

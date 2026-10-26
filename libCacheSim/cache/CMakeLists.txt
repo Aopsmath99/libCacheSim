@@ -35,6 +35,7 @@ set(eviction_sources_c
         eviction/Clock2QPlus.c
         eviction/ClockPro.c
         eviction/FIFO.c
+        eviction/GDSF_S3FIFO.c
         eviction/Hyperbolic.c
         eviction/LeCaR.c
         eviction/LeCaRv0.c       # an inefficient version but easier to understand
@@ -78,6 +79,7 @@ set(eviction_sources_cpp
         eviction/cpp/merlin.cpp
         eviction/cpp/LFU.cpp
         eviction/cpp/GDSF.cpp
+        eviction/GDSF_S3FIFO_shared.cpp
         eviction/cpp/LRU_K.cpp
         eviction/LHD/lhd.cpp
         eviction/LHD/LHD_Interface.cpp

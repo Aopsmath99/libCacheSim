@@ -83,6 +83,22 @@ cache_t *flashProb_init(const common_cache_params_t ccache_params,
 cache_t *GDSF_init(const common_cache_params_t ccache_params,
                    const char *cache_specific_params);
 
+cache_t *GDSF_S3FIFO_init(const common_cache_params_t ccache_params,
+                          const char *cache_specific_params);
+bool GDSF_S3FIFO_switch(cache_t *cache, const char *policy_name);
+
+cache_t *GDSF_S3FIFO_shared_init(const common_cache_params_t ccache_params,
+                                 const char *cache_specific_params);
+bool GDSF_S3FIFO_shared_switch(cache_t *cache, const char *policy_name);
+
+cache_t *GDSF_S3FIFO_rekey_init(const common_cache_params_t ccache_params,
+                               const char *cache_specific_params);
+bool GDSF_S3FIFO_rekey_switch(cache_t *cache, const char *policy_name);
+
+cache_t *GDSF_S3FIFO_warmup_init(const common_cache_params_t ccache_params,
+                                 const char *cache_specific_params);
+bool GDSF_S3FIFO_warmup_switch(cache_t *cache, const char *policy_name);
+
 cache_t *Hyperbolic_init(const common_cache_params_t ccache_params,
                          const char *cache_specific_params);
 

@@ -110,7 +110,8 @@ static inline int s3fifo_child_hashpower(int requested, int64_t size_bytes) {
 cache_t *S3FIFO_init(const common_cache_params_t ccache_params,
                      const char *cache_specific_params) {
   cache_t *cache =
-      cache_struct_init("S3FIFO", ccache_params, cache_specific_params);
+      cache_struct_init_without_hashtable("S3FIFO", ccache_params,
+                        cache_specific_params);
   cache->cache_init = S3FIFO_init;
   cache->cache_free = S3FIFO_free;
   cache->get = S3FIFO_get;

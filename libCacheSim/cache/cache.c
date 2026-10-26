@@ -40,9 +40,10 @@ extern "C" {
  * @param init_params eviction algorithm specific parameters
  * @return cache_t* pointer to the cache
  */
-cache_t *cache_struct_init(const char *const cache_name,
-                           const common_cache_params_t params,
-                           const void *const init_params) {
+static cache_t *cache_struct_init_internal(const char *const cache_name,
+                                           const common_cache_params_t params,
+                                           const void *const init_params,
+                                           const bool allocate_hashtable) {
   cache_t *cache = my_malloc(cache_t);
   memset(cache, 0, sizeof(cache_t));
   strncpy(cache->cache_name, cache_name, CACHE_NAME_ARRAY_LEN - 1);
@@ -79,11 +80,28 @@ cache_t *cache_struct_init(const char *const cache_name,
   int hash_power = HASH_POWER_DEFAULT;
   if (params.hashpower > 0 && params.hashpower < 40)
     hash_power = params.hashpower;
+  cache->hashpower = hash_power;
+  if (!allocate_hashtable) {
+    return cache;
+  }
+
   cache->hashtable = create_hashtable(hash_power);
   hashtable_add_ptr_to_monitoring(cache->hashtable, &cache->q_head);
   hashtable_add_ptr_to_monitoring(cache->hashtable, &cache->q_tail);
 
   return cache;
+}
+
+cache_t *cache_struct_init(const char *const cache_name,
+                           const common_cache_params_t params,
+                           const void *const init_params) {
+  return cache_struct_init_internal(cache_name, params, init_params, true);
+}
+
+cache_t *cache_struct_init_without_hashtable(
+    const char *const cache_name, const common_cache_params_t params,
+    const void *const init_params) {
+  return cache_struct_init_internal(cache_name, params, init_params, false);
 }
 
 /**
@@ -92,7 +110,9 @@ cache_t *cache_struct_init(const char *const cache_name,
  * @param cache
  */
 void cache_struct_free(cache_t *cache) {
-  free_hashtable(cache->hashtable);
+  if (cache->hashtable != NULL) {
+    free_hashtable(cache->hashtable);
+  }
   if (cache->admissioner != NULL) cache->admissioner->free(cache->admissioner);
   if (cache->prefetcher != NULL) cache->prefetcher->free(cache->prefetcher);
   my_free(sizeof(cache_t), cache);
@@ -108,7 +128,9 @@ void cache_struct_free(cache_t *cache) {
 cache_t *clone_cache(const cache_t *old_cache) {
   common_cache_params_t cc_params = {
       .cache_size = old_cache->cache_size,
-      .hashpower = old_cache->hashtable->hashpower,
+      .hashpower = old_cache->hashtable != NULL
+               ? old_cache->hashtable->hashpower
+               : old_cache->hashpower,
       .default_ttl = old_cache->default_ttl,
       .consider_obj_metadata = old_cache->obj_md_size == 0 ? false : true,
       .n_total_req = old_cache->n_total_req,
@@ -135,7 +157,9 @@ cache_t *create_cache_with_new_size(const cache_t *old_cache,
                                     uint64_t new_size) {
   common_cache_params_t cc_params = {
       .cache_size = new_size,
-      .hashpower = old_cache->hashtable->hashpower,
+      .hashpower = old_cache->hashtable != NULL
+               ? old_cache->hashtable->hashpower
+               : old_cache->hashpower,
       .default_ttl = old_cache->default_ttl,
       .consider_obj_metadata = old_cache->obj_md_size == 0 ? false : true,
       .n_total_req = old_cache->n_total_req,
